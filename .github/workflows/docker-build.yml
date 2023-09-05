@@ -1,0 +1,25 @@
+name: Build to Docker hub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_SECRET }} # or use DOCKERHUB_TOKEN
+
+      - name: Build Docker image
+        run: |
+          docker build -t lucadamelio/regista-scraper:latest .
+          docker push lucadamelio/regista-scraper:latest
+
+      - name: Logout from Docker Hub
+        run: docker logout
