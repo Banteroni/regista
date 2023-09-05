@@ -3,7 +3,7 @@ name: Build to Docker hub
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-publish:
@@ -18,8 +18,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t lucadamelio/regista-scraper:latest .
-          docker push lucadamelio/regista-scraper:latest
+          docker build -t lucadamelio/regista:latest .
+          docker push lucadamelio/regista:latest
 
       - name: Logout from Docker Hub
         run: docker logout
