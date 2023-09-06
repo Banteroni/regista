@@ -18,7 +18,8 @@ switch (process.env.DB) {
       process.env.DB_USER,
       process.env.DB_PASSWORD,
       {
-        host: process.env.DB_HOST + ":" + (process.env.DB_PORT || 3306),
+        host: process.env.DB_HOST ,
+        port: process.env.DB_PORT || 3306,
         dialect: "mysql",
         logging: process.env.NODE_ENV === "dev" ? console.log : false,
       }
@@ -30,7 +31,8 @@ switch (process.env.DB) {
       process.env.DB_USER,
       process.env.DB_PASSWORD,
       {
-        host: process.env.DB_HOST + ":" + (process.env.DB_PORT || 5432),
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT || 5432,
         dialect: "postgres",
         logging: process.env.NODE_ENV === "dev" ? console.log : false,
       }
@@ -42,7 +44,8 @@ switch (process.env.DB) {
       process.env.DB_USER,
       process.env.DB_PASSWORD,
       {
-        host: process.env.DB_HOST + ":" + (process.env.DB_PORT || 3306),
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT || 3306,
         dialect: "mariadb",
         logging: process.env.NODE_ENV === "dev" ? console.log : false,
       }

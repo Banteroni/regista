@@ -1,10 +1,33 @@
 import { Event, Player } from "../db/models.js";
 import { buildQuery, retrieveStats } from "../helpers/functions/common.js";
+import { Op } from "sequelize";
 
 export const getPlayers = async (req, res) => {
   try {
-    const response = await Player.findAll({ ...buildQuery(req) });
-    return res.send(response);
+    let obj = buildQuery(req);
+    req.query?.role && (obj.where.role = req.query.role);
+    req.query?.teamId && (obj.where.TeamId = req.query.teamId);
+    const response = await Player.findAll(obj);
+    const filtered = [];
+    for (const player of response) {
+      delete player.dataValues.createdAt;
+      delete player.dataValues.updatedAt;
+      if (req.query?.name) {
+        const completeName =
+          player.displayName == null
+            ? `${player.dataValues.name} ${player.dataValues.lastName}`
+            : player.displayName;
+        if (completeName.toLowerCase().includes(req.query.name.toLowerCase())) {
+          filtered.push(player);
+        }
+      }
+      else {
+        filtered.push(player);
+      }
+
+      
+    }
+    return res.send(filtered);
   } catch (error) {
     console.log(error);
     return res.status(500).send();
@@ -32,7 +55,7 @@ export const getPlayer = async (req, res) => {
       return res.status(404).send();
     }
     const stats = await retrieveStats(id);
-    console.log(stats)
+    console.log(stats);
 
     response = { ...response, stats };
     return res.send(response);

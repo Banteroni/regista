@@ -91,7 +91,6 @@ export const validateEnviroments = () => {
     "DB_NAME",
     "DB_PASSWORD",
     "DB_HOST",
-    "DB_PORT",
     "ROOT_PASSWORD",
   ];
   const missing = [];

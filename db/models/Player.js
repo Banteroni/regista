@@ -25,11 +25,11 @@ const Player = sequelize.define("Player", {
     },
     weight: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     height: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     foot: {
         type: DataTypes.STRING,

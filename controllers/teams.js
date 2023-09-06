@@ -1,22 +1,29 @@
-import { Team } from "../db/models.js"
+import { Team } from "../db/models.js";
+import { buildQuery } from "../helpers/functions/common.js";
+import { Op } from "sequelize";
 
 export const getTeams = async (req, res) => {
+  let obj = buildQuery(req);
+  req.query?.leagueId ? (obj.where.leagueId = req.query.leagueId) : null;
 
-    let teams = []
-    if (req.query.league) {
-        teams = await Team.findAll({ where: { leagueId: league_id } })
+  req.query?.name
+    ? (obj.where.name = { [Op.like]: `%${req.query.name}%` })
+    : null;
 
+  const teams = await Team.findAll(obj);
 
-    }
-    else {
-        teams = await Team.findAll()
-    }
+  teams = teams.map((v) => {
+    return {
+      id: v.id,
+      name: v.name,
+    };
+  });
 
-    return res.send(teams)
-}
+  return res.send(teams);
+};
 
 export const getTeam = async (req, res) => {
-    const { id } = req.params
-    const team = await Team.findOne({ where: { id } })
-    return res.send(team)
-}
+  const { id } = req.params;
+  const team = await Team.findOne({ where: { id } });
+  return res.send(team);
+};
