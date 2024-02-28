@@ -39,6 +39,25 @@ const appendPlayer = async (arr, player, playersToProcess, teamId) => {
   return;
 };
 
+const appendCronPlayer = (arr, player, playersToProcess, teamId, players) => {
+  /*   const record = await Player.findOne({
+      where: { id: parseInt(player.playerId), TeamId: teamId },
+    }); */
+  console.log(players.length)
+  const record = players.find((v) => v.id === parseInt(player.playerId));
+  if (!record) {
+    playersToProcess.push(parseInt(player.playerId));
+  }
+  arr.push({
+    playerId: parseInt(player.playerId),
+    position: player.playerRole,
+    number: player.jerseyNumber,
+    name: player.playerName,
+    captain: player.isCaptain,
+  });
+  return;
+}
+
 export const getMatchweeks = async (req, res) => {
   try {
     const { query } = req;
@@ -454,6 +473,8 @@ export const executeCron = async (req, res) => {
       },
     });
 
+    const players = await Player.findAll().then((v) => v.map((v) => v.dataValues));
+
     for (const fixture of fixtures) {
       const { id, LeagueId } = fixture;
       const { data } = await instance.get(
@@ -490,39 +511,42 @@ export const executeCron = async (req, res) => {
       const playersToProcess = [];
       // Append match formations to matchData
       for (const v of votationsData.homeTeam.mainPlayers) {
-        await appendPlayer(
+        appendCronPlayer(
           matchData.homeTeam.starting,
           v,
           playersToProcess,
-          Player,
-          matchData.homeTeam.id
+          matchData.homeTeam.id,
+          players
         );
       }
       for (const v of votationsData.homeTeam.benchPlayers) {
-        await appendPlayer(
+        appendCronPlayer(
           matchData.homeTeam.bench,
           v,
           playersToProcess,
-          Player,
-          matchData.homeTeam.id
+          matchData.homeTeam.id,
+          players
         );
       }
       for (const v of votationsData.awayTeam.mainPlayers) {
-        await appendPlayer(
+        appendCronPlayer(
+
           matchData.awayTeam.starting,
           v,
           playersToProcess,
-          Player,
-          matchData.awayTeam.id
+          matchData.awayTeam.id,
+          players
         );
       }
       for (const v of votationsData.awayTeam.benchPlayers) {
-        await appendPlayer(
+        appendCronPlayer(
+
           matchData.awayTeam.bench,
           v,
           playersToProcess,
-          Player,
-          matchData.awayTeam.id
+
+          matchData.awayTeam.id,
+          players
         );
       }
 
