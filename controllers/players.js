@@ -5,6 +5,7 @@ import { Op } from "sequelize";
 export const getPlayers = async (req, res) => {
   try {
     let obj = buildQuery(req);
+  
     req.query?.role && (obj.where.role = req.query.role);
     req.query?.teamId && (obj.where.TeamId = req.query.teamId);
     const response = await Player.findAll(obj);
@@ -13,10 +14,14 @@ export const getPlayers = async (req, res) => {
       delete player.dataValues.createdAt;
       delete player.dataValues.updatedAt;
       if (req.query?.name) {
-        const completeName =
-          player.displayName == null
-            ? `${player.dataValues.name} ${player.dataValues.lastName}`
-            : player.displayName;
+
+        let completeName
+        if (player.displayName == null) {
+          completeName = `${player.dataValues.name} ${player.dataValues.surname}`;
+        }
+        else {
+          completeName = player.displayName;
+        }
         if (completeName.toLowerCase().includes(req.query.name.toLowerCase())) {
           filtered.push(player);
         }
@@ -25,7 +30,7 @@ export const getPlayers = async (req, res) => {
         filtered.push(player);
       }
 
-      
+
     }
     return res.send(filtered);
   } catch (error) {

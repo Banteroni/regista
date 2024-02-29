@@ -10,7 +10,7 @@ export const getTeams = async (req, res) => {
     ? (obj.where.name = { [Op.like]: `%${req.query.name}%` })
     : null;
 
-  const teams = await Team.findAll(obj);
+  let teams = await Team.findAll(obj);
 
   teams = teams.map((v) => {
     return {

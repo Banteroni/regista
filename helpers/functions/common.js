@@ -1,6 +1,7 @@
 import sequelize from "../../db/conn.js";
 import { Event, League, Match } from "../../db/models.js";
 import { createHash } from "crypto";
+import Starting from "../../db/models/Starting.js";
 
 //append the events to an array
 export const appendEvent = (arr, event) => {
@@ -109,7 +110,7 @@ export const validateEnviroments = () => {
 export const buildQuery = (req) => {
   const { query } = req;
   const { limit, offset } = query;
-  let queryObj = {};
+  let queryObj = { where: {} };
 
   if (limit) {
     queryObj.limit = parseInt(limit);
@@ -126,11 +127,13 @@ export const retrieveStats = async (player_id) => {
   const events = await Event.findAll({ where: { PlayerId: player_id } });
   const assists = events.filter((event) => event.type === "assist").length;
   const goals = events.filter((event) => event.type === "goal").length;
+  let appearances = await Starting.count({ where: { PlayerId: player_id } });
+  appearances += events.filter((event) => event.type === "subIn").length;
   const yellowCards = events.filter(
     (event) => event.type === "yellowCard"
   ).length;
   const redCards = events.filter((event) => event.type === "redCard").length;
-  return { assists, goals, yellowCards, redCards };
+  return { assists, goals, yellowCards, redCards, appearances };
 };
 
 export const updateScore = async (matchId, homeScore, awayScore) => {
