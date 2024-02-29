@@ -1,4 +1,4 @@
-import { Match, Team, League } from "../db/models.js";
+import { Match, Team, League, Season } from "../db/models.js";
 import fs from "fs";
 import instance from "../helpers/scraper/instance.js";
 
@@ -78,9 +78,17 @@ export const enableLeague = async (req, res) => {
       LeagueId: league_id,
     }));
 
+    //get the first match year, and the last, which will establish the season, then create the season
+    const firstMatch = new Date(parsed[0].date).getFullYear();
+    const lastMatch = new Date(parsed[parsed.length - 1].date).getFullYear();
+    const seasonId = await Season.findOrCreate({
+      where: { from: firstMatch, to: lastMatch, LeagueId: league_id},
+    }).then((response) => response[0].id);
+
+
     for (const match of parsed) {
       try {
-        await Match.findOrCreate({ where: { ...match } });
+        await Match.findOrCreate({ where: { ...match, SeasonId: seasonId } });
       } catch (error) {
         console.log(error);
       }
